@@ -32,9 +32,8 @@ The **Lezo LGU System** is a lightweight, feature-rich, and scalable web applica
    
 2. **Run the Installation Script:**
    ```bash
-
-chmod +x install.sh
-./install.sh
+   chmod +x install.sh
+   ./install.sh
 
 
 This script:

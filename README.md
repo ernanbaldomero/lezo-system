@@ -61,19 +61,15 @@ OR double-click lezo-system.desktop in a GUI environment to launch with a termin
 2. **Access the Application:**
 Open your browser and navigate to http://192.168.65.131:8000/.
 
-
----
-
-### Section 8: Usage
-```markdown
 ## Usage
+```markdown
 
-### Web Interface
+## Web Interface
 - **Welcome Page (`/`):** Links to Setup and Citizens pages.
 - **Setup Page (`/setup`):** Upload a 12-tab `voters.xlsx` file (sheets: Agcawilan, Bagto, Bugasongan, Carugdog, Cogon, Ibao, Mina, Poblacion, Silakat Nonok, Sta. Cruz, Sta. Cruz Biga-a, Tayhawan) or initialize an empty database.
 - **Citizens Page (`/citizens`):** Lists citizens with name, barangay, services, and relationships. Search by name (case-insensitive). Pagination (10 per page). Add services (e.g., "AICS") or relationships (e.g., "brother") via AJAX buttons.
 
-### Command Line Import
+## Command Line Import
 To import data manually:
 ```bash
 python manage.py import_voters /path/to/voters.xlsx
@@ -81,9 +77,8 @@ python manage.py import_voters /path/to/voters.xlsx
 
 ---
 
-### Section 9: Project Structure
-```markdown
 ## Project Structure
+```markdown
 
 lezo-system/
 ├── lezo_lgu/         # Django project directory

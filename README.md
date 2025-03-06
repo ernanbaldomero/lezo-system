@@ -38,20 +38,14 @@ The **Lezo LGU System** is a lightweight, feature-rich, and scalable web applica
 
 This script:
 - **Installs Python 3, pip, virtualenv, PostgreSQL, and Gunicorn.
-
 - **Sets up the PostgreSQL database (lezo_db, user: lezo_user, password: Lezo2025).
-
 - **Creates and activates a virtual environment.
-
 - **Installs Python dependencies from requirements.txt.
-
 - **Applies database migrations and runs tests.
-
 - **Configures environment variables in .env.
 
 ## Running the Application
 ```markdown
-
 1. **Start the Server:**
    ```bash
    ./start.sh
@@ -61,10 +55,8 @@ OR double-click lezo-system.desktop in a GUI environment to launch with a termin
 2. **Access the Application:**
 Open your browser and navigate to http://192.168.65.131:8000/.
 
-## Usage
-```markdown
-
 ## Web Interface
+
 - **Welcome Page (`/`):** Links to Setup and Citizens pages.
 - **Setup Page (`/setup`):** Upload a 12-tab `voters.xlsx` file (sheets: Agcawilan, Bagto, Bugasongan, Carugdog, Cogon, Ibao, Mina, Poblacion, Silakat Nonok, Sta. Cruz, Sta. Cruz Biga-a, Tayhawan) or initialize an empty database.
 - **Citizens Page (`/citizens`):** Lists citizens with name, barangay, services, and relationships. Search by name (case-insensitive). Pagination (10 per page). Add services (e.g., "AICS") or relationships (e.g., "brother") via AJAX buttons.
@@ -73,9 +65,6 @@ Open your browser and navigate to http://192.168.65.131:8000/.
 To import data manually:
 ```bash
 python manage.py import_voters /path/to/voters.xlsx
-
-
----
 
 ## Project Structure
 ```markdown

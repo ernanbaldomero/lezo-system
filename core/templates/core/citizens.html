@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Citizens - Lezo LGU System</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        h1 { color: #333; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .pagination { margin-top: 20px; }
+        .pagination a { margin-right: 10px; text-decoration: none; color: #007bff; }
+        .pagination a:hover { text-decoration: underline; }
+        button { background-color: #007bff; color: white; border: none; padding: 5px 10px; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        footer { margin-top: 20px; text-align: center; font-size: 0.8em; color: #666; }
+    </style>
+</head>
+<body>
+    <h1>Citizens</h1>
+    <form method="get">
+        <input type="text" name="q" value="{{ query }}" placeholder="Search by name">
+        <button type="submit">Search</button>
+    </form>
+    <table>
+        <thead>
+            <tr>
+                <th>Last Name</th>
+                <th>First Name</th>
+                <th>Barangay</th>
+                <th>Services</th>
+                <th>Relationships</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for citizen in page_obj %}
+            <tr>
+                <td>{{ citizen.last_name }}</td>
+                <td>{{ citizen.first_name }}</td>
+                <td>{{ citizen.barangay }}</td>
+                <td>
+                    {% for transaction in citizen.transaction_set.all %}
+                        {{ transaction.service.name }}{% if not forloop.last %}, {% endif %}
+                    {% empty %}
+                        None
+                    {% endfor %}
+                </td>
+                <td>
+                    {% for rel_type, related in citizen.relationships %}
+                        {{ rel_type|capfirst }}: {{ related.first_name }} {{ related.last_name }}{% if not forloop.last %}, {% endif %}
+                    {% empty %}
+                        None
+                    {% endfor %}
+                </td>
+                <td>
+                    <button onclick="addService({{ citizen.id }})">Add Service</button>
+                    <button onclick="addRelationship({{ citizen.id }})">Add Relationship</button>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">No citizens found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?page=1&q={{ query }}">First</a>
+            <a href="?page={{ page_obj.previous_page_number }}&q={{ query }}">Previous</a>
+        {% endif %}
+        <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}&q={{ query }}">Next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}&q={{ query }}">Last</a>
+        {% endif %}
+    </div>
+    <footer>
+        <p>Copyright © 2025 Ernan T. Baldomero. All rights reserved. | <a href="https://ernan.net" target="_blank">ernan.net</a></p>
+    </footer>
+    <script>
+        function addService(citizenId) {
+            const service = prompt("Enter service name (e.g., AICS):");
+            if (service) {
+                fetch('/api/add_service/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({citizen_id: citizenId, service_name: service})
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        alert(data.message);
+                        location.reload();
+                    } else {
+                        alert(data.error);
+                    }
+                })
+                .catch(error => alert('Error: ' + error));
+            }
+        }
+
+        function addRelationship(citizenId) {
+            const relatedId = prompt("Enter related citizen ID:");
+            const relationshipType = prompt("Enter relationship type (e.g., brother):");
+            if (relatedId && relationshipType) {
+                fetch('/api/add_relationship/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({citizen_id: citizenId, related_citizen_id: relatedId, relationship_type: relationshipType})
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        alert(data.message);
+                        location.reload();
+                    } else {
+                        alert(data.error);
+                    }
+                })
+                .catch(error => alert('Error: ' + error));
+            }
+        }
+    </script>
+</body>
+</html>

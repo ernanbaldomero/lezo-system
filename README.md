@@ -45,6 +45,7 @@ This script:
 - **Configures environment variables in .env.
 
 ## Running the Application
+
 ```markdown
 1. **Start the Server:**
    ```bash

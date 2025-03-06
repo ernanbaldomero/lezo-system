@@ -49,9 +49,6 @@ This script:
 
 - **Configures environment variables in .env.
 
-
----
-
 ## Running the Application
 ```markdown
 
@@ -60,7 +57,6 @@ This script:
    ./start.sh
    
 OR double-click lezo-system.desktop in a GUI environment to launch with a terminal.
-
 
 2. **Access the Application:**
 Open your browser and navigate to http://192.168.65.131:8000/.

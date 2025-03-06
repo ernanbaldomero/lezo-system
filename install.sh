@@ -16,6 +16,7 @@ echo "Setting up PostgreSQL database..."
 sudo -u postgres psql -c "CREATE DATABASE lezo_db;" 2>/dev/null || true
 sudo -u postgres psql -c "CREATE USER lezo_user WITH PASSWORD 'Lezo2025';" 2>/dev/null || true
 sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE lezo_db TO lezo_user;" 2>/dev/null || true
+sudo -u postgres psql -d lezo_db -c "GRANT ALL PRIVILEGES ON SCHEMA public TO lezo_user;" 2>/dev/null || true
 
 # Create and activate virtual environment
 echo "Creating virtual environment..."

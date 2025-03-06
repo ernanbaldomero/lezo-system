@@ -53,9 +53,8 @@ This script:
 
 ---
 
-### Section 7: Running the Application
-```markdown
 ## Running the Application
+```markdown
 
 1. **Start the Server:**
    ```bash

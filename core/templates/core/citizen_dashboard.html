@@ -2,142 +2,73 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Citizens - Lezo LGU System</title>
+    <title>Citizen Dashboard - Lezo LGU System</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 40px; }
-        h1 { color: #333; }
+        h1, h2 { color: #333; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
         th { background-color: #f2f2f2; }
-        .pagination { margin-top: 20px; }
-        .pagination a { margin-right: 10px; text-decoration: none; color: #007bff; }
-        .pagination a:hover { text-decoration: underline; }
-        button { background-color: #007bff; color: white; border: none; padding: 5px 10px; cursor: pointer; }
+        form { margin: 20px 0; }
+        label, input, select { display: block; margin-bottom: 10px; }
+        button { background-color: #007bff; color: white; border: none; padding: 10px; cursor: pointer; }
         button:hover { background-color: #0056b3; }
         footer { margin-top: 20px; text-align: center; font-size: 0.8em; color: #666; }
-        ul { padding-left: 20px; }
     </style>
 </head>
 <body>
-    <h1>Citizens</h1>
-    <form method="get">
-        <input type="text" name="q" value="{{ query }}" placeholder="Search by name">
-        <button type="submit">Search</button>
+    <h1>Citizen Dashboard</h1>
+    <p>Welcome, {{ citizen.first_name }} {{ citizen.last_name }}</p>
+
+    <h2>Your Details</h2>
+    <form method="post">
+        {% csrf_token %}
+        <label for="address">Address:</label>
+        <input type="text" name="address" id="address" value="{{ citizen.address }}">
+        <label for="email">Email:</label>
+        <input type="email" name="email" id="email" value="{{ citizen.email }}">
+        <button type="submit" name="update_details">Update Details</button>
     </form>
+
+    <h2>Your Applications</h2>
     <table>
-        <thead>
-            <tr>
-                <th>Last Name</th>
-                <th>First Name</th>
-                <th>Barangay</th>
-                <th>Status</th>
-                <th>Services</th>
-                <th>Relationships</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
+        <thead><tr><th>Service</th><th>Status</th><th>Date Applied</th></tr></thead>
         <tbody>
-            {% for citizen in page_obj %}
-            <tr>
-                <td>{{ citizen.last_name }}</td>
-                <td>{{ citizen.first_name }}</td>
-                <td>{{ citizen.barangay }}</td>
-                <td>{{ citizen.status|capfirst }}</td>
-                <td>
-                    {% for transaction in citizen.transaction_set.all %}
-                        {{ transaction.service.name }}{% if not forloop.last %}, {% endif %}
-                    {% empty %}
-                        None
-                    {% endfor %}
-                </td>
-                <td>
-                    {% if citizen.relationships %}
-                        <ul>
-                        {% for rel_type, related in citizen.relationships %}
-                            <li>{{ rel_type|capfirst }}: {{ related.first_name }} {{ related.last_name }} ({{ related.barangay }})</li>
-                        {% endfor %}
-                        </ul>
-                    {% else %}
-                        None
-                    {% endif %}
-                </td>
-                <td>
-                    {% if user.is_authenticated and user.userprofile.role in 'staff,admin' %}
-                        <button onclick="addService({{ citizen.id }})">Add Service</button>
-                        <button onclick="addRelationship({{ citizen.id }})">Add Relationship</button>
-                    {% endif %}
-                </td>
-            </tr>
+            {% for app in applications %}
+            <tr><td>{{ app.service.name }}</td><td>{{ app.status }}</td><td>{{ app.date_applied }}</td></tr>
             {% empty %}
-            <tr>
-                <td colspan="7">No citizens found</td>
-            </tr>
+            <tr><td colspan="3">No applications</td></tr>
             {% endfor %}
         </tbody>
     </table>
-    <div class="pagination">
-        {% if page_obj.has_previous %}
-            <a href="?page=1&q={{ query }}">First</a>
-            <a href="?page={{ page_obj.previous_page_number }}&q={{ query }}">Previous</a>
-        {% endif %}
-        <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
-        {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}&q={{ query }}">Next</a>
-            <a href="?page={{ page_obj.paginator.num_pages }}&q={{ query }}">Last</a>
-        {% endif %}
-    </div>
+
+    <h2>Your Transactions</h2>
+    <table>
+        <thead><tr><th>Service</th><th>Date</th></tr></thead>
+        <tbody>
+            {% for trans in transactions %}
+            <tr><td>{{ trans.service.name }}</td><td>{{ trans.date }}</td></tr>
+            {% empty %}
+            <tr><td colspan="2">No transactions</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Apply for a Service</h2>
+    <form method="post">
+        {% csrf_token %}
+        <label for="service_id">Service:</label>
+        <select name="service_id" id="service_id">
+            {% for service in services %}
+            <option value="{{ service.id }}">{{ service.name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" name="apply_service">Apply</button>
+    </form>
+
+    <p><a href="{% url 'citizen_login' %}">Logout</a></p>
     <footer>
         <p>© 2023 Ernan T. Baldomero. All rights reserved. | <a href="https://ernan.net" target="_blank">ernan.net</a></p>
     </footer>
-    <script>
-        function addService(citizenId) {
-            const service = prompt("Enter service name (e.g., AICS):");
-            if (service) {
-                fetch('/api/add_service/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': '{{ csrf_token }}'
-                    },
-                    body: JSON.stringify({citizen_id: citizenId, service_name: service})
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.message) {
-                        alert(data.message);
-                        location.reload();
-                    } else {
-                        alert(data.error);
-                    }
-                })
-                .catch(error => alert('Error: ' + error));
-            }
-        }
-
-        function addRelationship(citizenId) {
-            const relatedId = prompt("Enter related citizen ID:");
-            const relationshipType = prompt("Enter relationship type (e.g., father):");
-            if (relatedId && relationshipType) {
-                fetch('/api/add_relationship/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': '{{ csrf_token }}'
-                    },
-                    body: JSON.stringify({citizen_id: citizenId, related_citizen_id: relatedId, relationship_type: relationshipType})
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.message) {
-                        alert(data.message);
-                        location.reload();
-                    } else {
-                        alert(data.error);
-                    }
-                })
-                .catch(error => alert('Error: ' + error));
-            }
-        }
-    </script>
 </body>
 </html>

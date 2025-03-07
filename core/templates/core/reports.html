@@ -1,75 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Reports - Lezo LGU System</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 40px; }
-        h1, h2 { color: #333; }
-        table { width: 50%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        canvas { max-width: 600px; margin-top: 20px; }
-        footer { margin-top: 20px; text-align: center; font-size: 0.8em; color: #666; }
-    </style>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
-    <h1>Reports</h1>
-    <h2>Total Citizens: {{ total_citizens }}</h2>
-    <canvas id="barangayChart"></canvas>
-
-    <h2>By Barangay</h2>
-    <table>
-        <thead><tr><th>Barangay</th><th>Count</th></tr></thead>
-        <tbody>{% for item in by_barangay %}<tr><td>{{ item.barangay }}</td><td>{{ item.count }}</td></tr>{% endfor %}</tbody>
+{% extends 'core/base.html' %}
+{% block title %}Reports{% endblock %}
+{% block content %}
+    <h1 class="text-center">Reports</h1>
+    <h2 class="mt-4">Citizens by Barangay</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Barangay</th>
+                <th>Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in citizens_by_barangay %}
+                <tr>
+                    <td>{{ item.barangay }}</td>
+                    <td>{{ item.count }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
     </table>
-
-    <h2>By Status</h2>
-    <table>
-        <thead><tr><th>Status</th><th>Count</th></tr></thead>
-        <tbody>{% for item in by_status %}<tr><td>{{ item.status|capfirst }}</td><td>{{ item.count }}</td></tr>{% endfor %}</tbody>
+    <h2 class="mt-4">Services by Type</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in services_by_type %}
+                <tr>
+                    <td>{{ item.assistance_type }}</td>
+                    <td>{{ item.count }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
     </table>
-
-    <h2>By Service</h2>
-    <table>
-        <thead><tr><th>Service</th><th>Count</th></tr></thead>
-        <tbody>{% for item in by_service %}<tr><td>{{ item.service__name }}</td><td>{{ item.count }}</td></tr>{% endfor %}</tbody>
-    </table>
-
-    <h2>By Civil Status</h2>
-    <table>
-        <thead><tr><th>Civil Status</th><th>Count</th></tr></thead>
-        <tbody>{% for item in by_civil_status %}<tr><td>{{ item.civil_status|capfirst }}</td><td>{{ item.count }}</td></tr>{% endfor %}</tbody>
-    </table>
-
-    <h2>By Sex</h2>
-    <table>
-        <thead><tr><th>Sex</th><th>Count</th></tr></thead>
-        <tbody>{% for item in by_sex %}<tr><td>{{ item.sex|default:'Unknown' }}</td><td>{{ item.count }}</td></tr>{% endfor %}</tbody>
-    </table>
-
-    <footer>
-        <p>© 2023 Ernan T. Baldomero. All rights reserved. | <a href="https://ernan.net" target="_blank">ernan.net</a></p>
-    </footer>
-
-    <script>
-        fetch('/reports/', { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-            .then(response => response.json())
-            .then(data => {
-                new Chart(document.getElementById('barangayChart'), {
-                    type: 'bar',
-                    data: {
-                        labels: data.by_barangay.map(item => item.barangay),
-                        datasets: [{
-                            label: 'Citizens by Barangay',
-                            data: data.by_barangay.map(item => item.count),
-                            backgroundColor: '#007bff'
-                        }]
-                    },
-                    options: { scales: { y: { beginAtZero: true } } }
-                });
-            });
-    </script>
-</body>
-</html>
+{% endblock %}

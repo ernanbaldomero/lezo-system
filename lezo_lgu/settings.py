@@ -66,8 +66,12 @@ DATABASES = {
         'CONN_MAX_AGE': 600,
     },
     'test': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': ':memory:',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'test_lezo_db',
+        'USER': os.getenv('DB_USER', 'lezo_user'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'Lezo2025'),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
 

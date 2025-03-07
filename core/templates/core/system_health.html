@@ -1,25 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>System Health - Lezo LGU System</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }
-        .container { max-width: 600px; margin: 50px auto; padding: 20px; background: #fff; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        h1 { color: #333; text-align: center; }
-        p { text-align: center; }
-        a { color: #007bff; text-decoration: none; }
-        a:hover { text-decoration: underline; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>System Health</h1>
-        <p>CPU Usage: {{ cpu_usage }}%</p>
-        <p>Memory Total: {{ memory_total|floatformat:2 }} MB</p>
-        <p>Memory Used: {{ memory_used|floatformat:2 }} MB</p>
-        <p>Memory Usage: {{ memory_percent }}%</p>
-        <p><a href="{% url 'welcome' %}">Back to Welcome</a></p>
-    </div>
-</body>
-</html>
+{% extends 'core/base.html' %}
+{% block title %}System Health{% endblock %}
+{% block content %}
+    <h1 class="text-center">System Health</h1>
+    <dl class="row mt-4">
+        <dt class="col-sm-3">CPU Usage:</dt><dd class="col-sm-9">{{ cpu_usage }}%</dd>
+        <dt class="col-sm-3">Memory Total:</dt><dd class="col-sm-9">{{ memory_total|floatformat:2 }} MB</dd>
+        <dt class="col-sm-3">Memory Used:</dt><dd class="col-sm-9">{{ memory_used|floatformat:2 }} MB</dd>
+        <dt class="col-sm-3">Memory Usage:</dt><dd class="col-sm-9">{{ memory_percent }}%</dd>
+    </dl>
+{% endblock %}

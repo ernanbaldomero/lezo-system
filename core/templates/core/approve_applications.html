@@ -1,1 +1,56 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Approve Applications - Lezo LGU System</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        h1 { color: #333; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        button { background-color: #007bff; color: white; border: none; padding: 5px 10px; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        .reject { background-color: #dc3545; }
+        .reject:hover { background-color: #c82333; }
+        footer { margin-top: 20px; text-align: center; font-size: 0.8em; color: #666; }
+    </style>
+</head>
+<body>
+    <h1>Approve Applications</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Citizen</th>
+                <th>Service</th>
+                <th>Date Applied</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for application in applications %}
+            <tr>
+                <td>{{ application.citizen.first_name }} {{ application.citizen.last_name }}</td>
+                <td>{{ application.service.name }}</td>
+                <td>{{ application.date_applied }}</td>
+                <td>
+                    <form method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="application_id" value="{{ application.id }}">
+                        <button type="submit" name="action" value="approve">Approve</button>
+                        <button type="submit" name="action" value="reject" class="reject">Reject</button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">No pending applications</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <footer>
+        <p>© 2023 Ernan T. Baldomero. All rights reserved. | <a href="https://ernan.net" target="_blank">ernan.net</a></p>
+    </footer>
+</body>
+</html>

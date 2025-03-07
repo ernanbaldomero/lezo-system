@@ -1,17 +1,13 @@
 """
 Django settings for Lezo LGU System project.
-MFA removed, optimized for functional frontend and optional Excel import.
 """
 
 from pathlib import Path
-import os
-from dotenv import load_dotenv
 
-load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.getenv('SECRET_KEY', 'your-secret-key-here')
-DEBUG = os.getenv('DEBUG', 'True') == 'True'
+SECRET_KEY = 'django-insecure-your-secret-key-here'  # Replace with a secure key in production
+DEBUG = True  # Set to False in production
 ALLOWED_HOSTS = ['192.168.65.131', 'localhost', '127.0.0.1']
 
 INSTALLED_APPS = [
@@ -22,7 +18,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'core',
+    'core',  # Your app
 ]
 
 MIDDLEWARE = [
@@ -58,12 +54,11 @@ WSGI_APPLICATION = 'lezo_lgu.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME', 'lezo_db'),
-        'USER': os.getenv('DB_USER', 'lezo_user'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'Lezo2025'),
-        'HOST': os.getenv('DB_HOST', 'localhost'),
-        'PORT': os.getenv('DB_PORT', '5432'),
-        'CONN_MAX_AGE': 600,
+        'NAME': 'lezo_db',
+        'USER': 'lezo_user',
+        'PASSWORD': 'Lezo2025',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
@@ -83,32 +78,4 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/'
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'app.log',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['file'],
-            'level': 'INFO',
-            'propagate': True,
-        },
-        'core': {
-            'handlers': ['file'],
-            'level': 'INFO',
-            'propagate': True,
-        },
-    },
-}

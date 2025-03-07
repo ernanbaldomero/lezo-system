@@ -1,36 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Welcome - Lezo LGU System</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }
-        .container { max-width: 800px; margin: 50px auto; padding: 20px; background: #fff; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        h1 { color: #333; text-align: center; }
-        p { text-align: center; }
-        a { color: #007bff; text-decoration: none; margin: 0 10px; }
-        a:hover { text-decoration: underline; }
-        .nav { margin-top: 20px; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Welcome to Lezo LGU System</h1>
-        <p>Hello, {{ user.username }}!</p>
-        <div class="nav">
-            <a href="{% url 'import_data' %}">Import Data (Optional)</a>
-            <a href="{% url 'citizens' %}">Citizens</a>
-            <a href="{% url 'add_service' %}">Add Service</a>
-            <a href="{% url 'add_relationship' %}">Add Relationship</a>
-            <a href="{% url 'apply_service' %}">Apply Service</a>
-            <a href="{% url 'approve_applications' %}">Approve Applications</a>
-            <a href="{% url 'reports' %}">Reports</a>
-            <a href="{% url 'citizen_login' %}">Citizen Login</a>
-            <a href="{% url 'citizen_dashboard' %}">Citizen Dashboard</a>
-            <a href="{% url 'export_citizens' %}">Export Citizens</a>
-            <a href="{% url 'system_health' %}">System Health</a>
-            <a href="{% url 'logout' %}">Logout</a>
-        </div>
+{% extends 'core/base.html' %}
+{% block title %}Welcome{% endblock %}
+{% block content %}
+    <h1 class="text-center">Welcome to Lezo LGU System</h1>
+    <p class="text-center">Hello, {{ user.username }}!</p>
+    <div class="text-center mt-4">
+        <p>Use the navigation bar above to access features.</p>
     </div>
-</body>
-</html>
+{% endblock %}

@@ -62,7 +62,7 @@ Open your browser and navigate to http://192.168.65.131:8000/.
 
 ## Command Line Import
 To import data manually:
-```bash
+  ```bash
 python manage.py import_voters /path/to/voters.xlsx
 
 ## Project Structure

@@ -2,46 +2,23 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Welcome to Lezo LGU System</title>
+    <title>Welcome - Lezo LGU System</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; }
+        body { font-family: Arial, sans-serif; margin: 40px; background-color: #f4f4f4; }
         h1 { color: #333; }
-        a { margin-right: 20px; text-decoration: none; color: #007bff; }
+        .container { max-width: 600px; margin: 50px auto; padding: 20px; background: #fff; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        a { color: #007bff; text-decoration: none; margin-right: 15px; }
         a:hover { text-decoration: underline; }
-        footer { margin-top: 20px; text-align: center; font-size: 0.8em; color: #666; }
-        .dashboard { margin-top: 20px; }
     </style>
 </head>
 <body>
-    <h1>Welcome to Lezo LGU System</h1>
-    <p>
-        <a href="{% url 'citizens' %}">Citizens</a>
-        {% if user.is_authenticated and user.userprofile.role == 'admin' %}
-            <a href="{% url 'import_data' %}">Import Data</a>
-            <a href="{% url 'export_citizens' %}">Export Citizens</a>
-            <a href="{% url 'system_health' %}">System Health</a>
-        {% endif %}
-        <a href="{% url 'apply_service' %}">Apply for Service</a>
-        {% if user.is_authenticated and user.userprofile.role in 'staff,admin' %}
-            <a href="{% url 'approve_applications' %}">Approve Applications</a>
-        {% endif %}
-        {% if user.is_authenticated and user.userprofile.role == 'admin' %}
-            <a href="{% url 'reports' %}">Reports</a>
-        {% endif %}
-        <a href="{% url 'citizen_login' %}">Citizen Portal</a>
-        <a href="{% url 'logout' %}">Logout</a>
-    </p>
-    <div class="dashboard">
-        {% if total_citizens %}
-            <p>Total Citizens: {{ total_citizens }}</p>
-        {% elif pending_applications %}
-            <p>Pending Applications: {{ pending_applications }}</p>
-        {% elif citizen_count %}
-            <p>Citizen Count: {{ citizen_count }}</p>
-        {% endif %}
+    <div class="container">
+        <h1>Welcome to Lezo LGU System</h1>
+        <p>Hello, {{ user.username }}!</p>
+        <p>
+            <a href="{% url 'import_data' %}">Import Data (Optional)</a>
+            <a href="{% url 'logout' %}">Logout</a>
+        </p>
     </div>
-    <footer>
-        <p>© 2023 Ernan T. Baldomero. All rights reserved. | <a href="https://ernan.net" target="_blank">ernan.net</a></p>
-    </footer>
 </body>
 </html>

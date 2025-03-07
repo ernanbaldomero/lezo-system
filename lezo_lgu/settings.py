@@ -1,24 +1,19 @@
 """
 Django settings for Lezo LGU System project.
-Generated and optimized for lightweight operation on 1GB RAM VM.
+Configured for authentication, RBAC, and lightweight operation.
 """
 
 from pathlib import Path
 import os
 from dotenv import load_dotenv
 
-# Load environment variables from .env
 load_dotenv()
-
-# Base directory of the project
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Security settings
 SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 ALLOWED_HOSTS = ['192.168.65.131', 'localhost', '127.0.0.1']
 
-# Installed applications
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -30,7 +25,6 @@ INSTALLED_APPS = [
     'core',
 ]
 
-# Middleware configuration (minimal for performance)
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -41,14 +35,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# URL configuration
 ROOT_URLCONF = 'lezo_lgu.urls'
 
-# Template configuration
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -61,10 +53,8 @@ TEMPLATES = [
     },
 ]
 
-# WSGI application
 WSGI_APPLICATION = 'lezo_lgu.wsgi.application'
 
-# Database configuration
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -73,32 +63,32 @@ DATABASES = {
         'PASSWORD': os.getenv('DB_PASSWORD', 'Lezo2025'),
         'HOST': os.getenv('DB_HOST', 'localhost'),
         'PORT': os.getenv('DB_PORT', '5432'),
-        'CONN_MAX_AGE': 600,  # Persistent connections for efficiency
+        'CONN_MAX_AGE': 600,
     },
     'test': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': ':memory:',  # In-memory SQLite for fast testing
+        'NAME': ':memory:',
     }
 }
 
-# Password validation (kept minimal for simplicity)
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
 ]
 
-# Internationalization
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# Static files
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
-# Default primary key field type
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Logging configuration (optimized for minimal overhead)
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -110,7 +100,7 @@ LOGGING = {
     },
     'handlers': {
         'file': {
-            'level': 'INFO',  # Reduced verbosity for performance
+            'level': 'INFO',
             'class': 'logging.FileHandler',
             'filename': BASE_DIR / 'app.log',
             'formatter': 'verbose',

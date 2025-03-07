@@ -1,10 +1,11 @@
 """
 Database models for Lezo LGU System.
-Includes expanded Citizen fields and all required models.
+Includes expanded Citizen fields, CitizenUser, and all required models.
 """
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.auth.hashers import make_password
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -37,6 +38,7 @@ class Citizen(models.Model):
     ], blank=True, null=True)
     tin = models.CharField(max_length=20, blank=True, null=True)
     philhealth_no = models.CharField(max_length=20, blank=True, null=True)
+    email = models.EmailField(blank=True, null=True)  # Added for email notifications
     status = models.CharField(max_length=20, choices=[
         ('active', 'Active'),
         ('dead', 'Dead'),
@@ -53,6 +55,21 @@ class Citizen(models.Model):
             models.Index(fields=['last_name', 'first_name', 'birthday']),
             models.Index(fields=['barangay', 'status']),
         ]
+
+class CitizenUser(models.Model):
+    citizen = models.OneToOneField(Citizen, on_delete=models.CASCADE)
+    password = models.CharField(max_length=128)  # Hashed password
+
+    def set_password(self, raw_password):
+        self.password = make_password(raw_password)
+        self.save()
+
+    def check_password(self, raw_password):
+        from django.contrib.auth.hashers import check_password
+        return check_password(raw_password, self.password)
+
+    def __str__(self):
+        return f"{self.citizen.first_name} {self.citizen.last_name}"
 
 class Service(models.Model):
     name = models.CharField(max_length=100, unique=True)

@@ -1,14 +1,16 @@
 """
-Utility functions for Lezo LGU System, including genealogy inference.
-Optimized to minimize database queries.
+Utility functions for Lezo LGU System.
+Includes genealogy inference and SMS placeholder.
 """
 
 from .models import Relationship
+import logging
+
+logger = logging.getLogger('core')
 
 def get_relationships(citizen):
     """
     Get inferred relationships for a citizen (uncles, nephews).
-    Direct relationships are handled in views for efficiency.
     Returns a list of (type, related_citizen) tuples.
     """
     inferred = []
@@ -30,3 +32,11 @@ def get_relationships(citizen):
                 inferred.append(('nephew', nephew.related_citizen))
 
     return inferred
+
+def send_sms(citizen, message):
+    """
+    Placeholder for SMS notification.
+    Requires an SMS gateway API (e.g., Twilio) for full implementation.
+    """
+    # Replace with actual SMS API call, e.g., using Twilio
+    logger.info(f"SMS to {citizen.philhealth_no or citizen.first_name}: {message}")

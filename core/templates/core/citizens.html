@@ -15,6 +15,7 @@
         button { background-color: #007bff; color: white; border: none; padding: 5px 10px; cursor: pointer; }
         button:hover { background-color: #0056b3; }
         footer { margin-top: 20px; text-align: center; font-size: 0.8em; color: #666; }
+        ul { padding-left: 20px; }
     </style>
 </head>
 <body>
@@ -29,6 +30,7 @@
                 <th>Last Name</th>
                 <th>First Name</th>
                 <th>Barangay</th>
+                <th>Status</th>
                 <th>Services</th>
                 <th>Relationships</th>
                 <th>Actions</th>
@@ -40,6 +42,7 @@
                 <td>{{ citizen.last_name }}</td>
                 <td>{{ citizen.first_name }}</td>
                 <td>{{ citizen.barangay }}</td>
+                <td>{{ citizen.status|capfirst }}</td>
                 <td>
                     {% for transaction in citizen.transaction_set.all %}
                         {{ transaction.service.name }}{% if not forloop.last %}, {% endif %}
@@ -48,20 +51,26 @@
                     {% endfor %}
                 </td>
                 <td>
-                    {% for rel_type, related in citizen.relationships %}
-                        {{ rel_type|capfirst }}: {{ related.first_name }} {{ related.last_name }}{% if not forloop.last %}, {% endif %}
-                    {% empty %}
+                    {% if citizen.relationships %}
+                        <ul>
+                        {% for rel_type, related in citizen.relationships %}
+                            <li>{{ rel_type|capfirst }}: {{ related.first_name }} {{ related.last_name }} ({{ related.barangay }})</li>
+                        {% endfor %}
+                        </ul>
+                    {% else %}
                         None
-                    {% endfor %}
+                    {% endif %}
                 </td>
                 <td>
-                    <button onclick="addService({{ citizen.id }})">Add Service</button>
-                    <button onclick="addRelationship({{ citizen.id }})">Add Relationship</button>
+                    {% if user.is_authenticated and user.userprofile.role in 'staff,admin' %}
+                        <button onclick="addService({{ citizen.id }})">Add Service</button>
+                        <button onclick="addRelationship({{ citizen.id }})">Add Relationship</button>
+                    {% endif %}
                 </td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="6">No citizens found</td>
+                <td colspan="7">No citizens found</td>
             </tr>
             {% endfor %}
         </tbody>
@@ -78,7 +87,7 @@
         {% endif %}
     </div>
     <footer>
-        <p>Copyright © 2025 Ernan T. Baldomero. All rights reserved. | <a href="https://ernan.net" target="_blank">ernan.net</a></p>
+        <p>© 2023 Ernan T. Baldomero. All rights reserved. | <a href="https://ernan.net" target="_blank">ernan.net</a></p>
     </footer>
     <script>
         function addService(citizenId) {
@@ -107,7 +116,7 @@
 
         function addRelationship(citizenId) {
             const relatedId = prompt("Enter related citizen ID:");
-            const relationshipType = prompt("Enter relationship type (e.g., brother):");
+            const relationshipType = prompt("Enter relationship type (e.g., father):");
             if (relatedId && relationshipType) {
                 fetch('/api/add_relationship/', {
                     method: 'POST',

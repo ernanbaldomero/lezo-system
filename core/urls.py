@@ -15,4 +15,8 @@ urlpatterns = [
     path('apply_service/', views.apply_service, name='apply_service'),
     path('approve_applications/', views.approve_applications, name='approve_applications'),
     path('reports/', views.reports, name='reports'),
+    path('citizen/login/', views.citizen_login, name='citizen_login'),
+    path('citizen/dashboard/', views.citizen_dashboard, name='citizen_dashboard'),
+    path('export/citizens/', views.export_citizens, name='export_citizens'),
+    path('system/health/', views.system_health, name='system_health'),
 ]

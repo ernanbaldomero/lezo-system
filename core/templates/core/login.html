@@ -4,32 +4,30 @@
     <meta charset="UTF-8">
     <title>Login - Lezo LGU System</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; }
+        body { font-family: Arial, sans-serif; margin: 40px; background-color: #f4f4f4; }
         h1 { color: #333; }
-        form { max-width: 300px; margin: 20px 0; }
-        label, input { display: block; margin-bottom: 10px; }
-        input[type="text"], input[type="password"] { width: 100%; padding: 5px; }
-        button { background-color: #007bff; color: white; border: none; padding: 10px; cursor: pointer; }
+        .login-container { max-width: 400px; margin: 50px auto; padding: 20px; background: #fff; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        label { display: block; margin: 10px 0 5px; }
+        input[type="text"], input[type="password"] { width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px; }
+        button { background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; }
         button:hover { background-color: #0056b3; }
-        .error { color: red; }
-        footer { margin-top: 20px; text-align: center; font-size: 0.8em; color: #666; }
+        .error { color: red; margin-top: 10px; }
     </style>
 </head>
 <body>
-    <h1>Login</h1>
-    <form method="post">
-        {% csrf_token %}
-        <label for="username">Username:</label>
-        <input type="text" name="username" id="username" required>
-        <label for="password">Password:</label>
-        <input type="password" name="password" id="password" required>
-        <button type="submit">Login</button>
-    </form>
-    {% if form.errors %}
-        <p class="error">Invalid username or password.</p>
-    {% endif %}
-    <footer>
-        <p>© 2023 Ernan T. Baldomero. All rights reserved. | <a href="https://ernan.net" target="_blank">ernan.net</a></p>
-    </footer>
+    <div class="login-container">
+        <h1>Login</h1>
+        <form method="post">
+            {% csrf_token %}
+            <label for="username">Username:</label>
+            <input type="text" name="username" id="username" required>
+            <label for="password">Password:</label>
+            <input type="password" name="password" id="password" required>
+            <button type="submit">Login</button>
+        </form>
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+    </div>
 </body>
 </html>

@@ -1,0 +1,63 @@
+{% extends 'core/base.html' %}
+{% block title %}{{ citizen }}{% endblock %}
+{% block content %}
+    <h1 class="text-center">{{ citizen.first_name }} {{ citizen.last_name }}</h1>
+    {% if user.is_superuser %}
+        <form method="post" class="mt-4">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary w-100">Save Changes</button>
+        </form>
+    {% else %}
+        <dl class="row mt-4">
+            <dt class="col-sm-3">NO:</dt><dd class="col-sm-9">{{ citizen.no|default:"N/A" }}</dd>
+            <dt class="col-sm-3">Last Name:</dt><dd class="col-sm-9">{{ citizen.last_name }}</dd>
+            <dt class="col-sm-3">First Name:</dt><dd class="col-sm-9">{{ citizen.first_name }}</dd>
+            <dt class="col-sm-3">Middle Name:</dt><dd class="col-sm-9">{{ citizen.middle_name|default:"N/A" }}</dd>
+            <dt class="col-sm-3">Suffix:</dt><dd class="col-sm-9">{{ citizen.suffix|default:"N/A" }}</dd>
+            <dt class="col-sm-3">Address:</dt><dd class="col-sm-9">{{ citizen.address|default:"N/A" }}</dd>
+            <dt class="col-sm-3">Precinct:</dt><dd class="col-sm-9">{{ citizen.precinct|default:"N/A" }}</dd>
+            <dt class="col-sm-3">Sex:</dt><dd class="col-sm-9">{{ citizen.sex|default:"N/A" }}</dd>
+            <dt class="col-sm-3">Birthday:</dt><dd class="col-sm-9">{{ citizen.birthday|default:"N/A" }}</dd>
+            <dt class="col-sm-3">Place of Birth:</dt><dd class="col-sm-9">{{ citizen.place_of_birth|default:"N/A" }}</dd>
+            <dt class="col-sm-3">Civil Status:</dt><dd class="col-sm-9">{{ citizen.civil_status|default:"N/A" }}</dd>
+            <dt class="col-sm-3">TIN:</dt><dd class="col-sm-9">{{ citizen.tin|default:"N/A" }}</dd>
+            <dt class="col-sm-3">PhilHealth No:</dt><dd class="col-sm-9">{{ citizen.philhealth_no|default:"N/A" }}</dd>
+            <dt class="col-sm-3">Barangay:</dt><dd class="col-sm-9">{{ citizen.barangay }}</dd>
+        </dl>
+    {% endif %}
+    {% if relationships_from or relationships_to %}
+        <h2 class="mt-4">Relationships</h2>
+        <ul class="list-group">
+            {% for rel in relationships_from %}
+                <li class="list-group-item">{{ rel.from_citizen }} is {{ rel.relationship_type }} of {{ rel.to_citizen }}</li>
+            {% endfor %}
+            {% for rel in relationships_to %}
+                <li class="list-group-item">{{ rel.from_citizen }} is {{ rel.relationship_type }} of {{ rel.to_citizen }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% if services %}
+        <h2 class="mt-4">Services</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Recipient</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for service in services %}
+                    <tr>
+                        <td>{{ service.assistance_type }}</td>
+                        <td>{{ service.recipient_name }}</td>
+                        <td>{{ service.amount }}</td>
+                        <td>{{ service.status }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}

@@ -1,14 +1,12 @@
 """
 Web views for Lezo LGU System.
-Excel import made optional, login functionality simplified.
+Excel import optional, login fixed, supporting all URL routes.
 """
 
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from django.core.management import call_command
-from django.core.files.storage import FileSystemStorage
+from django.contrib.auth import authenticate, login
 import logging
-from io import StringIO
 
 logger = logging.getLogger('core')
 
@@ -19,27 +17,65 @@ def welcome(request):
 
 def login_view(request):
     if request.method == 'POST':
-        from django.contrib.auth import authenticate, login
         username = request.POST.get('username')
         password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
+            logger.info(f"User {username} logged in successfully")
             return redirect('welcome')
         else:
+            logger.warning(f"Failed login attempt for username: {username}")
             return render(request, 'core/login.html', {'error': 'Invalid credentials'})
     return render(request, 'core/login.html')
 
 @login_required
 def import_data(request):
     if request.method == 'POST' and 'excel_file' in request.FILES:
-        excel_file = request.FILES['excel_file']
-        if not excel_file.name.endswith('.xlsx'):
-            logger.error(f"Invalid file type uploaded: {excel_file.name}")
-            return render(request, 'core/import.html', {'error': 'Please upload an .xlsx file'})
-        fs = FileSystemStorage()
-        filename = fs.save(excel_file.name, excel_file)
-        logger.info(f"Excel file {filename} uploaded successfully (optional import not implemented)")
-        fs.delete(filename)  # Placeholder; implement import logic if needed
+        # Optional Excel import (placeholder; implement if needed)
+        logger.info("Excel file upload attempted (optional import not fully implemented)")
         return redirect('welcome')
     return render(request, 'core/import.html')
+
+@login_required
+def citizens(request):
+    return render(request, 'core/citizens.html')
+
+@login_required
+def add_service(request):
+    return render(request, 'core/add_service.html')
+
+@login_required
+def add_relationship(request):
+    return render(request, 'core/add_relationship.html')
+
+@login_required
+def apply_service(request):
+    return render(request, 'core/apply_service.html')
+
+@login_required
+def approve_applications(request):
+    return render(request, 'core/approve_applications.html')
+
+@login_required
+def reports(request):
+    return render(request, 'core/reports.html')
+
+def citizen_login(request):
+    if request.method == 'POST':
+        # Placeholder for citizen login logic
+        logger.info("Citizen login attempted")
+        return redirect('citizen_dashboard')
+    return render(request, 'core/citizen_login.html')
+
+@login_required
+def citizen_dashboard(request):
+    return render(request, 'core/citizen_dashboard.html')
+
+@login_required
+def export_citizens(request):
+    return render(request, 'core/export_citizens.html')
+
+@login_required
+def system_health(request):
+    return render(request, 'core/system_health.html')

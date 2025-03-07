@@ -35,7 +35,6 @@ The **Lezo LGU System** is a lightweight, feature-rich, and scalable web applica
    chmod +x install.sh
    ./install.sh
 
-
 This script:
 - **Installs Python 3, pip, virtualenv, PostgreSQL, and Gunicorn.
 - **Sets up the PostgreSQL database (lezo_db, user: lezo_user, password: Lezo2025).
@@ -46,7 +45,6 @@ This script:
 
 ## Running the Application
 
-```markdown
 1. **Start the Server:**
    ```bash
    ./start.sh
@@ -68,7 +66,6 @@ To import data manually:
 python manage.py import_voters /path/to/voters.xlsx
 
 ## Project Structure
-```markdown
 
 lezo-system/
 ├── lezo_lgu/         # Django project directory

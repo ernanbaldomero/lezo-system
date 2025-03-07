@@ -107,3 +107,59 @@ class AuditLog(models.Model):
 
     def __str__(self):
         return f"{self.user} - {self.action} on {self.model_name} ({self.object_id})"
+
+# Added Models Below
+
+class Transaction(models.Model):
+    STATUS_CHOICES = (
+        ('Pending', 'Pending'),
+        ('Completed', 'Completed'),
+        ('Failed', 'Failed'),
+    )
+
+    citizen = models.ForeignKey(Citizen, on_delete=models.CASCADE, related_name='transactions')
+    service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='transactions')
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
+    transaction_date = models.DateTimeField(auto_now_add=True)
+    remarks = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.citizen} - {self.service} - {self.amount}"
+
+    class Meta:
+        verbose_name = "Transaction"
+        verbose_name_plural = "Transactions"
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    citizen = models.ForeignKey(Citizen, on_delete=models.SET_NULL, null=True, blank=True)
+    phone_number = models.CharField(max_length=15, blank=True, null=True)
+    role = models.CharField(max_length=50, default='Citizen')
+
+    def __str__(self):
+        return f"{self.user.username} ({self.role})"
+
+    class Meta:
+        verbose_name = "User Profile"
+        verbose_name_plural = "User Profiles"
+
+class ServiceApplication(models.Model):
+    STATUS_CHOICES = (
+        ('Pending', 'Pending'),
+        ('Approved', 'Approved'),
+        ('Rejected', 'Rejected'),
+    )
+
+    citizen = models.ForeignKey(Citizen, on_delete=models.CASCADE, related_name='service_applications')
+    service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='applications')
+    application_date = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
+    remarks = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.citizen} applied for {self.service}"
+
+    class Meta:
+        verbose_name = "Service Application"
+        verbose_name_plural = "Service Applications"

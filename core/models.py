@@ -19,6 +19,8 @@ class Citizen(models.Model):
     philhealth_no = models.CharField(max_length=50, blank=True, null=True, unique=True)
     barangay = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
+    # Added 'status' field to match CitizenAdmin.list_display
+    status = models.CharField(max_length=20, choices=[('Active', 'Active'), ('Inactive', 'Inactive')], default='Active')
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} ({self.barangay})"
@@ -48,6 +50,9 @@ class Service(models.Model):
     remarks = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    # Added fields to match ServiceAdmin.list_display
+    name = models.CharField(max_length=100, default='Assistance')  # Placeholder for display
+    description = models.TextField(default='Service assistance')
 
     def __str__(self):
         return f"{self.assistance_type} for {self.recipient_name} ({self.barangay})"
@@ -108,24 +113,16 @@ class AuditLog(models.Model):
     def __str__(self):
         return f"{self.user} - {self.action} on {self.model_name} ({self.object_id})"
 
-# Added Models Below
+# Added Models to Match admin.py
 
 class Transaction(models.Model):
-    STATUS_CHOICES = (
-        ('Pending', 'Pending'),
-        ('Completed', 'Completed'),
-        ('Failed', 'Failed'),
-    )
-
     citizen = models.ForeignKey(Citizen, on_delete=models.CASCADE, related_name='transactions')
     service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='transactions')
+    date = models.DateTimeField(auto_now_add=True)  # Matches TransactionAdmin.list_display
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
-    transaction_date = models.DateTimeField(auto_now_add=True)
-    remarks = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f"{self.citizen} - {self.service} - {self.amount}"
+        return f"{self.citizen} - {self.service} - {self.date}"
 
     class Meta:
         verbose_name = "Transaction"
@@ -133,9 +130,8 @@ class Transaction(models.Model):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    citizen = models.ForeignKey(Citizen, on_delete=models.SET_NULL, null=True, blank=True)
-    phone_number = models.CharField(max_length=15, blank=True, null=True)
-    role = models.CharField(max_length=50, default='Citizen')
+    role = models.CharField(max_length=50, default='Citizen')  # Matches UserProfileAdmin.list_display
+    barangay = models.CharField(max_length=100, blank=True, null=True)  # Matches UserProfileAdmin.list_display
 
     def __str__(self):
         return f"{self.user.username} ({self.role})"
@@ -153,9 +149,8 @@ class ServiceApplication(models.Model):
 
     citizen = models.ForeignKey(Citizen, on_delete=models.CASCADE, related_name='service_applications')
     service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='applications')
-    application_date = models.DateTimeField(auto_now_add=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
-    remarks = models.TextField(blank=True, null=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')  # Matches ServiceApplicationAdmin.list_display
+    date_applied = models.DateTimeField(auto_now_add=True)  # Matches ServiceApplicationAdmin.list_display
 
     def __str__(self):
         return f"{self.citizen} applied for {self.service}"

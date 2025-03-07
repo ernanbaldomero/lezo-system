@@ -4,21 +4,30 @@
     <meta charset="UTF-8">
     <title>Welcome - Lezo LGU System</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; background-color: #f4f4f4; }
-        h1 { color: #333; }
-        .container { max-width: 600px; margin: 50px auto; padding: 20px; background: #fff; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        a { color: #007bff; text-decoration: none; margin-right: 15px; }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }
+        .container { max-width: 800px; margin: 50px auto; padding: 20px; background: #fff; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1 { color: #333; text-align: center; }
+        p { text-align: center; }
+        a { color: #007bff; text-decoration: none; margin: 0 10px; }
         a:hover { text-decoration: underline; }
+        .nav { margin-top: 20px; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Welcome to Lezo LGU System</h1>
         <p>Hello, {{ user.username }}!</p>
-        <p>
+        <div class="nav">
             <a href="{% url 'import_data' %}">Import Data (Optional)</a>
+            <a href="{% url 'citizens' %}">Citizens</a>
+            <a href="{% url 'apply_service' %}">Apply Service</a>
+            <a href="{% url 'approve_applications' %}">Approve Applications</a>
+            <a href="{% url 'reports' %}">Reports</a>
+            <a href="{% url 'citizen_login' %}">Citizen Login</a>
+            <a href="{% url 'export_citizens' %}">Export Citizens</a>
+            <a href="{% url 'system_health' %}">System Health</a>
             <a href="{% url 'logout' %}">Logout</a>
-        </p>
+        </div>
     </div>
 </body>
 </html>

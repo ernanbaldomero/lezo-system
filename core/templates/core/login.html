@@ -1,1 +1,35 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Lezo LGU System</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        h1 { color: #333; }
+        form { max-width: 300px; margin: 20px 0; }
+        label, input { display: block; margin-bottom: 10px; }
+        input[type="text"], input[type="password"] { width: 100%; padding: 5px; }
+        button { background-color: #007bff; color: white; border: none; padding: 10px; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        .error { color: red; }
+        footer { margin-top: 20px; text-align: center; font-size: 0.8em; color: #666; }
+    </style>
+</head>
+<body>
+    <h1>Login</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label for="username">Username:</label>
+        <input type="text" name="username" id="username" required>
+        <label for="password">Password:</label>
+        <input type="password" name="password" id="password" required>
+        <button type="submit">Login</button>
+    </form>
+    {% if form.errors %}
+        <p class="error">Invalid username or password.</p>
+    {% endif %}
+    <footer>
+        <p>© 2023 Ernan T. Baldomero. All rights reserved. | <a href="https://ernan.net" target="_blank">ernan.net</a></p>
+    </footer>
+</body>
+</html>

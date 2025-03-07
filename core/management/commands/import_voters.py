@@ -1,6 +1,6 @@
 """
 Management command to import voters from Excel file.
-Optimized with bulk operations for performance.
+Updated for expanded Citizen fields.
 """
 
 import pandas as pd
@@ -40,14 +40,19 @@ class Command(BaseCommand):
                     try:
                         last_name = str(row['LAST NAME']).strip()
                         first_name = str(row['FIRST NAME']).strip()
-                        precinct = str(row['PRECINCT']).strip()
-                        birthday = pd.to_datetime(row.get('BIRTHDAYS'), errors='coerce') if 'BIRTHDAYS' in row and pd.notnull(row['BIRTHDAYS']) else None
                         middle_name = str(row['MIDDLE NAME']).strip() if 'MIDDLE NAME' in row and pd.notnull(row['MIDDLE NAME']) else None
-                        literacy_status = row['LITERACY STATUS'] == 'Yes' if 'LITERACY STATUS' in row and pd.notnull(row['LITERACY STATUS']) else False
-                        senior_status = row['SENIOR STATUS'] == 'Yes' if 'SENIOR STATUS' in row and pd.notnull(row['SENIOR STATUS']) else False
-                        pwd_status = row['PWD STATUS'] == 'Yes' if 'PWD STATUS' in row and pd.notnull(row['PWD STATUS']) else False
+                        suffix = str(row['SUFFIX']).strip() if 'SUFFIX' in row and pd.notnull(row['SUFFIX']) else None
+                        address = str(row['ADDRESS']).strip() if 'ADDRESS' in row and pd.notnull(row['ADDRESS']) else None
+                        precinct = str(row['PRECINCT']).strip()
+                        legend = str(row['LEGEND']).strip() if 'LEGEND' in row and pd.notnull(row['LEGEND']) else None
+                        sex = str(row['SEX']).strip() if 'SEX' in row and pd.notnull(row['SEX']) and row['SEX'] in ['M', 'F'] else None
+                        birthday = pd.to_datetime(row.get('BIRTHDAY'), errors='coerce') if 'BIRTHDAY' in row and pd.notnull(row['BIRTHDAY']) else None
+                        place_of_birth = str(row['PLACE OF BIRTH']).strip() if 'PLACE OF BIRTH' in row and pd.notnull(row['PLACE OF BIRTH']) else None
+                        civil_status = str(row['CIVIL STATUS']).strip().lower() if 'CIVIL STATUS' in row and pd.notnull(row['CIVIL STATUS']) else None
+                        tin = str(row['TIN']).strip() if 'TIN' in row and pd.notnull(row['TIN']) else None
+                        philhealth_no = str(row['PHILHEALTH NO']).strip() if 'PHILHEALTH NO' in row and pd.notnull(row['PHILHEALTH NO']) else None
+                        status = str(row['STATUS']).strip().lower() if 'STATUS' in row and pd.notnull(row['STATUS']) else 'active'
 
-                        # Deduplication check
                         if birthday:
                             exists = Citizen.objects.filter(last_name=last_name, first_name=first_name, birthday=birthday).exists()
                         else:
@@ -58,18 +63,23 @@ class Command(BaseCommand):
                                 last_name=last_name,
                                 first_name=first_name,
                                 middle_name=middle_name,
+                                suffix=suffix,
+                                address=address,
                                 precinct=precinct,
-                                barangay=barangay,
+                                legend=legend,
+                                sex=sex,
                                 birthday=birthday,
-                                literacy_status=literacy_status,
-                                senior_status=senior_status,
-                                pwd_status=pwd_status
+                                place_of_birth=place_of_birth,
+                                civil_status=civil_status,
+                                tin=tin,
+                                philhealth_no=philhealth_no,
+                                status=status,
+                                barangay=barangay
                             ))
                     except Exception as e:
                         logger.error(f"Error processing row {index} in {sheet_name}: {e}")
                         self.stdout.write(self.style.ERROR(f"Error at row {index} in {sheet_name}: {e}"))
                         continue
-                # Bulk create for performance
                 Citizen.objects.bulk_create(citizens_to_create)
                 logger.info(f"Imported {len(citizens_to_create)} citizens from {barangay}")
                 self.stdout.write(self.style.SUCCESS(f"Imported {len(citizens_to_create)} citizens from {barangay}"))

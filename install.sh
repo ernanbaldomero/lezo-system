@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Installation script for Lezo LGU System on Ubuntu 24.04 LTS
-# Updated to ensure lezo_user owns lezo_db and skips tests during install
+# Updated for all features with proper permissions and dependencies
 
 set -e
 
@@ -36,7 +36,7 @@ pip install -r requirements.txt
 echo "Generating secret key..."
 SECRET_KEY=$(python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())')
 
-# Create .env file
+# Create .env file with email settings (update with your credentials)
 echo "Creating .env file..."
 cat > .env << EOL
 DB_NAME=lezo_db
@@ -46,14 +46,19 @@ DB_HOST=localhost
 DB_PORT=5432
 SECRET_KEY=$SECRET_KEY
 DEBUG=True
+EMAIL_HOST=smtp.gmail.com
+EMAIL_HOST_USER=your-email@gmail.com
+EMAIL_HOST_PASSWORD=your-app-password
 EOL
 
-# Create static directory to avoid STATICFILES_DIRS warning
+# Create static directory
 echo "Creating static directory..."
-mkdir -p static
+mkdir -p static/core
+chmod -R 755 static
 
-# Run database migrations for default database
-echo "Running database migrations for default database..."
+# Run database migrations
+echo "Running database migrations..."
+python manage.py makemigrations
 python manage.py migrate
 
 # Create startup script
@@ -82,5 +87,4 @@ mkdir -p /home/$(whoami)/lezo_backups
 
 echo "Installation completed successfully!"
 echo "To start the application, run './start.sh' or double-click 'lezo-system.desktop'."
-echo "Create an admin user with: python manage.py createsuperuser"
-echo "To run tests manually, use: python manage.py test"
+echo "The system will prompt you to create a superuser on first access."

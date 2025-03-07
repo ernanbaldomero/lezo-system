@@ -1,6 +1,6 @@
 """
 Django settings for Lezo LGU System project.
-Configured for authentication, RBAC, and lightweight operation.
+Configured for all features including MFA, email, and audit logging.
 """
 
 from pathlib import Path
@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'mfa',  # Multi-Factor Authentication
     'core',
 ]
 
@@ -33,6 +34,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'mfa.middleware.MFAMiddleware',  # MFA middleware
 ]
 
 ROOT_URLCONF = 'lezo_lgu.urls'
@@ -71,6 +73,19 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
 ]
 
+# Email configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+# MFA settings
+MFA_UNALLOWED_METHODS = ('U2F',)  # Limit to email/SMS
+MFA_LOGIN_CALLBACK = 'core.views.mfa_login_callback'
+
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
@@ -78,6 +93,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
@@ -90,7 +106,7 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '{levelname} {asctime} {module} {message}',
+            'format': '{levelname} {asctime} {module} {message} (User: {request.user.username if request.user.is_authenticated else "Anonymous"})',
             'style': '{',
         },
     },

@@ -1,32 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Import Data - Lezo LGU System</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }
-        .container { max-width: 500px; margin: 50px auto; padding: 20px; background: #fff; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        h1 { color: #333; text-align: center; }
-        label { display: block; margin: 10px 0 5px; }
-        input[type="file"] { margin-bottom: 10px; }
-        button { background-color: #007bff; color: white; padding: 10px; width: 100%; border: none; border-radius: 4px; cursor: pointer; }
-        button:hover { background-color: #0056b3; }
-        .error { color: red; text-align: center; margin-top: 10px; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Import Data (Optional)</h1>
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <label for="excel_file">Upload Excel File (optional):</label>
-            <input type="file" name="excel_file" id="excel_file" accept=".xlsx">
-            <button type="submit">Upload</button>
-        </form>
-        {% if error %}
-            <p class="error">{{ error }}</p>
-        {% endif %}
-        <p><a href="{% url 'welcome' %}">Back to Welcome</a></p>
-    </div>
-</body>
-</html>
+{% extends 'core/base.html' %}
+{% block title %}Import Data{% endblock %}
+{% block content %}
+    <h1 class="text-center">Import Data</h1>
+    <form method="post" enctype="multipart/form-data" class="mt-4">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="excel_file" class="form-label">Upload Excel File (optional):</label>
+            <input type="file" name="excel_file" id="excel_file" class="form-control" accept=".xlsx">
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Upload</button>
+    </form>
+{% endblock %}

@@ -1,43 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Apply for Service - Lezo LGU System</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 40px; }
-        h1 { color: #333; }
-        form { max-width: 400px; margin: 20px 0; }
-        label, select { display: block; margin-bottom: 10px; }
-        select { width: 100%; padding: 5px; }
-        button { background-color: #007bff; color: white; border: none; padding: 10px; cursor: pointer; }
-        button:hover { background-color: #0056b3; }
-        .error { color: red; }
-        footer { margin-top: 20px; text-align: center; font-size: 0.8em; color: #666; }
-    </style>
-</head>
-<body>
-    <h1>Apply for Service</h1>
-    <form method="post">
+{% extends 'core/base.html' %}
+{% block title %}Apply Service{% endblock %}
+{% block content %}
+    <h1 class="text-center">Apply for Service</h1>
+    <form method="post" class="mt-4">
         {% csrf_token %}
-        <label for="citizen_id">Citizen:</label>
-        <select name="citizen_id" id="citizen_id" required>
-            {% for citizen in citizens %}
-                <option value="{{ citizen.id }}">{{ citizen.first_name }} {{ citizen.last_name }}</option>
-            {% endfor %}
-        </select>
-        <label for="service_id">Service:</label>
-        <select name="service_id" id="service_id" required>
-            {% for service in services %}
-                <option value="{{ service.id }}">{{ service.name }}</option>
-            {% endfor %}
-        </select>
-        <button type="submit">Apply</button>
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary w-100">Submit Application</button>
     </form>
-    {% if error %}
-        <p class="error">{{ error }}</p>
-    {% endif %}
-    <footer>
-        <p>© 2023 Ernan T. Baldomero. All rights reserved. | <a href="https://ernan.net" target="_blank">ernan.net</a></p>
-    </footer>
-</body>
-</html>
+{% endblock %}

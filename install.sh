@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Installation script for Lezo LGU System on Ubuntu 24.04 LTS
-# Simplified to skip tests during install and ensure clean setup
+# Updated to ensure lezo_user owns lezo_db and skips tests during install
 
 set -e
 
@@ -11,17 +11,16 @@ echo "Starting installation of Lezo LGU System..."
 sudo apt update -y
 sudo apt install -y python3 python3-pip python3-venv postgresql postgresql-contrib gunicorn
 
-# Drop existing databases to start fresh (optional but recommended)
+# Drop existing databases for a clean start
 echo "Dropping existing databases for a clean start..."
 sudo -u postgres psql -c "DROP DATABASE IF EXISTS lezo_db;" 2>/dev/null || true
 sudo -u postgres psql -c "DROP DATABASE IF EXISTS test_lezo_db;" 2>/dev/null || true
 
-# Set up PostgreSQL database and user with CREATEDB privilege
-echo "Setting up PostgreSQL database..."
-sudo -u postgres psql -c "CREATE DATABASE lezo_db;" 2>/dev/null || true
+# Set up PostgreSQL user and database with lezo_user as owner
+echo "Setting up PostgreSQL user and database..."
 sudo -u postgres psql -c "CREATE USER lezo_user WITH PASSWORD 'Lezo2025';" 2>/dev/null || true
 sudo -u postgres psql -c "ALTER USER lezo_user CREATEDB;" 2>/dev/null || true
-sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE lezo_db TO lezo_user;" 2>/dev/null || true
+sudo -u postgres psql -c "CREATE DATABASE lezo_db OWNER lezo_user;" 2>/dev/null || true
 
 # Create and activate virtual environment
 echo "Creating virtual environment..."

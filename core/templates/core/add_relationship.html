@@ -1,22 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Add Relationship - Lezo LGU System</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }
-        .container { max-width: 600px; margin: 50px auto; padding: 20px; background: #fff; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        h1 { color: #333; text-align: center; }
-        p { text-align: center; }
-        a { color: #007bff; text-decoration: none; }
-        a:hover { text-decoration: underline; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Add Relationship</h1>
-        <p>Placeholder for adding a relationship.</p>
-        <p><a href="{% url 'welcome' %}">Back to Welcome</a></p>
-    </div>
-</body>
-</html>
+{% extends 'core/base.html' %}
+{% block title %}Add Relationship{% endblock %}
+{% block content %}
+    <h1 class="text-center">Add Relationship</h1>
+    <form method="post" class="mt-4">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary w-100">Add Relationship</button>
+    </form>
+{% endblock %}

@@ -14,8 +14,18 @@
 <body>
     <h1>Welcome to Lezo LGU System</h1>
     <p>
-        <a href="{% url 'setup' %}">Setup</a>
         <a href="{% url 'citizens' %}">Citizens</a>
+        {% if user.is_authenticated and user.userprofile.role == 'admin' %}
+            <a href="{% url 'import_data' %}">Import Data</a>
+        {% endif %}
+        <a href="{% url 'apply_service' %}">Apply for Service</a>
+        {% if user.is_authenticated and user.userprofile.role in 'staff,admin' %}
+            <a href="{% url 'approve_applications' %}">Approve Applications</a>
+        {% endif %}
+        {% if user.is_authenticated and user.userprofile.role == 'admin' %}
+            <a href="{% url 'reports' %}">Reports</a>
+        {% endif %}
+        <a href="{% url 'logout' %}">Logout</a>
     </p>
     <footer>
         <p>Copyright © 2025 Ernan T. Baldomero. All rights reserved. | <a href="https://ernan.net" target="_blank">ernan.net</a></p>

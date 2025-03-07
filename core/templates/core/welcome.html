@@ -9,6 +9,7 @@
         a { margin-right: 20px; text-decoration: none; color: #007bff; }
         a:hover { text-decoration: underline; }
         footer { margin-top: 20px; text-align: center; font-size: 0.8em; color: #666; }
+        .dashboard { margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -17,6 +18,8 @@
         <a href="{% url 'citizens' %}">Citizens</a>
         {% if user.is_authenticated and user.userprofile.role == 'admin' %}
             <a href="{% url 'import_data' %}">Import Data</a>
+            <a href="{% url 'export_citizens' %}">Export Citizens</a>
+            <a href="{% url 'system_health' %}">System Health</a>
         {% endif %}
         <a href="{% url 'apply_service' %}">Apply for Service</a>
         {% if user.is_authenticated and user.userprofile.role in 'staff,admin' %}
@@ -25,10 +28,20 @@
         {% if user.is_authenticated and user.userprofile.role == 'admin' %}
             <a href="{% url 'reports' %}">Reports</a>
         {% endif %}
+        <a href="{% url 'citizen_login' %}">Citizen Portal</a>
         <a href="{% url 'logout' %}">Logout</a>
     </p>
+    <div class="dashboard">
+        {% if total_citizens %}
+            <p>Total Citizens: {{ total_citizens }}</p>
+        {% elif pending_applications %}
+            <p>Pending Applications: {{ pending_applications }}</p>
+        {% elif citizen_count %}
+            <p>Citizen Count: {{ citizen_count }}</p>
+        {% endif %}
+    </div>
     <footer>
-        <p>Copyright © 2025 Ernan T. Baldomero. All rights reserved. | <a href="https://ernan.net" target="_blank">ernan.net</a></p>
+        <p>© 2023 Ernan T. Baldomero. All rights reserved. | <a href="https://ernan.net" target="_blank">ernan.net</a></p>
     </footer>
 </body>
 </html>

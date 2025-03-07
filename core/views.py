@@ -1,12 +1,13 @@
 """
 Web views for Lezo LGU System.
-Excel import optional, login fixed, supporting all URL routes.
+Excel import optional, login fixed, supporting all URL routes with system health metrics.
 """
 
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login
 import logging
+import psutil
 
 logger = logging.getLogger('core')
 
@@ -78,4 +79,12 @@ def export_citizens(request):
 
 @login_required
 def system_health(request):
-    return render(request, 'core/system_health.html')
+    cpu_usage = psutil.cpu_percent(interval=1)
+    memory = psutil.virtual_memory()
+    context = {
+        'cpu_usage': cpu_usage,
+        'memory_total': memory.total / (1024 * 1024),  # Convert to MB
+        'memory_used': memory.used / (1024 * 1024),    # Convert to MB
+        'memory_percent': memory.percent,
+    }
+    return render(request, 'core/system_health.html', context)

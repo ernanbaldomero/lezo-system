@@ -1,32 +1,60 @@
 """
 Database models for Lezo LGU System.
-Optimized with indexes for query performance.
+Includes expanded Citizen fields and all required models.
 """
 
 from django.db import models
+from django.contrib.auth.models import User
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    role = models.CharField(max_length=20, choices=[
+        ('admin', 'Admin'),
+        ('staff', 'Staff'),
+        ('viewer', 'Viewer'),
+    ], default='viewer')
+    barangay = models.CharField(max_length=50, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.role}"
 
 class Citizen(models.Model):
-    """Model representing a citizen."""
-    last_name = models.CharField(max_length=100, db_index=True)  # Indexed for search
-    first_name = models.CharField(max_length=100, db_index=True)  # Indexed for search
+    last_name = models.CharField(max_length=100, db_index=True)
+    first_name = models.CharField(max_length=100, db_index=True)
     middle_name = models.CharField(max_length=100, blank=True, null=True)
+    suffix = models.CharField(max_length=10, blank=True, null=True)
+    address = models.TextField(blank=True, null=True)
     precinct = models.CharField(max_length=50)
-    barangay = models.CharField(max_length=50, db_index=True)  # Indexed for filtering
+    legend = models.CharField(max_length=50, blank=True, null=True)
+    sex = models.CharField(max_length=10, choices=[('M', 'Male'), ('F', 'Female')], blank=True, null=True)
     birthday = models.DateField(blank=True, null=True)
-    literacy_status = models.BooleanField(default=False)
-    senior_status = models.BooleanField(default=False)
-    pwd_status = models.BooleanField(default=False)
+    place_of_birth = models.CharField(max_length=100, blank=True, null=True)
+    civil_status = models.CharField(max_length=20, choices=[
+        ('single', 'Single'),
+        ('married', 'Married'),
+        ('widowed', 'Widowed'),
+        ('divorced', 'Divorced'),
+    ], blank=True, null=True)
+    tin = models.CharField(max_length=20, blank=True, null=True)
+    philhealth_no = models.CharField(max_length=20, blank=True, null=True)
+    status = models.CharField(max_length=20, choices=[
+        ('active', 'Active'),
+        ('dead', 'Dead'),
+        ('bedridden', 'Bedridden'),
+        ('moved', 'Moved'),
+    ], default='active')
+    barangay = models.CharField(max_length=50, db_index=True)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 
     class Meta:
         indexes = [
-            models.Index(fields=['last_name', 'first_name', 'birthday']),  # For deduplication
+            models.Index(fields=['last_name', 'first_name', 'birthday']),
+            models.Index(fields=['barangay', 'status']),
         ]
 
 class Service(models.Model):
-    """Model representing a service provided to citizens."""
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField()
 
@@ -34,7 +62,6 @@ class Service(models.Model):
         return self.name
 
 class Transaction(models.Model):
-    """Model representing a service transaction for a citizen."""
     citizen = models.ForeignKey(Citizen, on_delete=models.CASCADE)
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
     date = models.DateField()
@@ -44,11 +71,10 @@ class Transaction(models.Model):
 
     class Meta:
         indexes = [
-            models.Index(fields=['citizen', 'date']),  # For efficient querying
+            models.Index(fields=['citizen', 'date']),
         ]
 
 class Relationship(models.Model):
-    """Model representing relationships between citizens."""
     citizen = models.ForeignKey(Citizen, related_name='relationships', on_delete=models.CASCADE)
     related_citizen = models.ForeignKey(Citizen, related_name='related_relationships', on_delete=models.CASCADE)
     type = models.CharField(max_length=50)
@@ -56,8 +82,28 @@ class Relationship(models.Model):
     class Meta:
         unique_together = ('citizen', 'related_citizen', 'type')
         indexes = [
-            models.Index(fields=['citizen', 'type']),  # For relationship queries
+            models.Index(fields=['citizen', 'type']),
         ]
 
     def __str__(self):
         return f"{self.citizen} is {self.type} of {self.related_citizen}"
+
+class ServiceApplication(models.Model):
+    citizen = models.ForeignKey(Citizen, on_delete=models.CASCADE)
+    service = models.ForeignKey(Service, on_delete=models.CASCADE)
+    status = models.CharField(max_length=20, choices=[
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    ], default='pending')
+    date_applied = models.DateField(auto_now_add=True)
+    approved_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    date_approved = models.DateField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.citizen} - {self.service} ({self.status})"
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['status', 'date_applied']),
+        ]

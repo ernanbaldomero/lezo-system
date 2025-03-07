@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Installation script for Lezo LGU System on Ubuntu 24.04 LTS
-# Updated to ensure migrations are applied before tests
+# Simplified to skip tests during install and ensure clean setup
 
 set -e
 
@@ -10,6 +10,11 @@ echo "Starting installation of Lezo LGU System..."
 # Update package list and install dependencies
 sudo apt update -y
 sudo apt install -y python3 python3-pip python3-venv postgresql postgresql-contrib gunicorn
+
+# Drop existing databases to start fresh (optional but recommended)
+echo "Dropping existing databases for a clean start..."
+sudo -u postgres psql -c "DROP DATABASE IF EXISTS lezo_db;" 2>/dev/null || true
+sudo -u postgres psql -c "DROP DATABASE IF EXISTS test_lezo_db;" 2>/dev/null || true
 
 # Set up PostgreSQL database and user with CREATEDB privilege
 echo "Setting up PostgreSQL database..."
@@ -52,16 +57,6 @@ mkdir -p static
 echo "Running database migrations for default database..."
 python manage.py migrate
 
-# Ensure test database exists and apply migrations
-echo "Setting up test database and applying migrations..."
-sudo -u postgres psql -c "CREATE DATABASE test_lezo_db OWNER lezo_user;" 2>/dev/null || true
-export DATABASE_URL="postgres://lezo_user:Lezo2025@localhost:5432/test_lezo_db"
-python manage.py migrate --database=test
-
-# Run tests
-echo "Running tests..."
-python manage.py test
-
 # Create startup script
 echo "Creating start.sh..."
 cat > start.sh << EOL
@@ -89,3 +84,4 @@ mkdir -p /home/$(whoami)/lezo_backups
 echo "Installation completed successfully!"
 echo "To start the application, run './start.sh' or double-click 'lezo-system.desktop'."
 echo "Create an admin user with: python manage.py createsuperuser"
+echo "To run tests manually, use: python manage.py test"

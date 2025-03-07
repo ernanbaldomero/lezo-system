@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Installation script for Lezo LGU System on Ubuntu 24.04 LTS
-# Updated with PostgreSQL CREATEDB and static directory fixes
+# Updated to ensure migrations are applied before tests
 
 set -e
 
@@ -44,13 +44,19 @@ SECRET_KEY=$SECRET_KEY
 DEBUG=True
 EOL
 
-# Create static directory
+# Create static directory to avoid STATICFILES_DIRS warning
 echo "Creating static directory..."
 mkdir -p static
 
-# Run database migrations
-echo "Running database migrations..."
+# Run database migrations for default database
+echo "Running database migrations for default database..."
 python manage.py migrate
+
+# Ensure test database exists and apply migrations
+echo "Setting up test database and applying migrations..."
+sudo -u postgres psql -c "CREATE DATABASE test_lezo_db OWNER lezo_user;" 2>/dev/null || true
+export DATABASE_URL="postgres://lezo_user:Lezo2025@localhost:5432/test_lezo_db"
+python manage.py migrate --database=test
 
 # Run tests
 echo "Running tests..."

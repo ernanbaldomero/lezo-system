@@ -1,11 +1,12 @@
 """
 Django settings for Lezo LGU System project.
-Configured for all features including MFA, email, and audit logging.
+Configured for all features including MFA, email, and audit logging with corrected logging setup.
 """
 
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+import logging
 
 load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -101,12 +102,27 @@ LOGOUT_REDIRECT_URL = '/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Custom logging filter to add user info
+class UserFilter(logging.Filter):
+    def filter(self, record):
+        request = getattr(record, 'request', None)
+        if request and hasattr(request, 'user'):
+            record.username = request.user.username if request.user.is_authenticated else 'Anonymous'
+        else:
+            record.username = 'System'
+        return True
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'filters': {
+        'user_filter': {
+            '()': 'lezo_lgu.settings.UserFilter',
+        },
+    },
     'formatters': {
         'verbose': {
-            'format': '{levelname} {asctime} {module} {message} (User: {request.user.username if request.user.is_authenticated else "Anonymous"})',
+            'format': '{levelname} {asctime} {module} {message} (User: {username})',
             'style': '{',
         },
     },
@@ -116,6 +132,7 @@ LOGGING = {
             'class': 'logging.FileHandler',
             'filename': BASE_DIR / 'app.log',
             'formatter': 'verbose',
+            'filters': ['user_filter'],
         },
     },
     'loggers': {

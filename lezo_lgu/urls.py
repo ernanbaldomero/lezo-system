@@ -1,16 +1,17 @@
 """
-URL configuration for Lezo LGU System project.
-Includes new routes for citizen portal, exports, and health.
+URL configuration for lezo_lgu project.
 """
 
 from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
+from core import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('core.urls')),
-    path('login/', auth_views.LoginView.as_view(template_name='core/login.html'), name='login'),
+    path('', views.welcome, name='welcome'),
+    path('login/', views.login_view, name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
-    path('mfa/', include('mfa.urls')),  # MFA routes
+    path('import/', views.import_data, name='import_data'),
+    path('core/', include('core.urls')),
 ]
